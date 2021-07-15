@@ -22,7 +22,6 @@ export const TemplateList = props => {
             </div>
 
         </React.Fragment>
-
     );
 }
 

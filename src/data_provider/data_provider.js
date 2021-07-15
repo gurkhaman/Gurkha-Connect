@@ -3,7 +3,7 @@
 import { fetchUtils } from 'react-admin';
 import { stringify } from 'query-string';
 
-const apiUrl = 'https://my.api.com/';
+const apiUrl = 'https://jsonplaceholder.typicode.com';
 const httpClient = fetchUtils.fetchJson;
 
 export default {
