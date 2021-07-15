@@ -1,7 +1,7 @@
 import * as React from 'react';
-import {List, Datagrid, TextField, EmailField, UrlField, ReferenceField} from 'react-admin';
+import { List, Datagrid, TextField, EmailField, ReferenceField } from 'react-admin';
 
-export const InstanceList = props => (
+export const ListA = props => (
     <List {...props} title=" ">
         <Datagrid rowClick="edit">
             <TextField source="id" />
@@ -12,7 +12,7 @@ export const InstanceList = props => (
     </List>
 );
 
-export const PostList = props => (
+export const ListB = props => (
     <List {...props} title=" ">
         <Datagrid rowClick="edit">
             <ReferenceField source="userId" reference="users"><TextField source="id" /></ReferenceField>
