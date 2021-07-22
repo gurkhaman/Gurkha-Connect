@@ -5288,6 +5288,14 @@
     "snapdragon" "^0.8.1"
     "to-regex" "^3.0.1"
 
+"fakerest@^3.0.0":
+  "integrity" "sha512-D1y6a13dh34n738YMztecCX36JRKI5kxPaNVQukXUXvUyK7eANWyB5zczy0SMoMUDXC/ceKfjkgwbc1AYqYYOQ=="
+  "resolved" "https://registry.npmjs.org/fakerest/-/fakerest-3.3.0.tgz"
+  "version" "3.3.0"
+  dependencies:
+    "babel-runtime" "^6.26.0"
+    "lodash" "^4.17.21"
+
 "fast-deep-equal@^3.1.1", "fast-deep-equal@^3.1.3":
   "integrity" "sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q=="
   "resolved" "https://registry.npmjs.org/fast-deep-equal/-/fast-deep-equal-3.1.3.tgz"
@@ -9588,7 +9596,7 @@
   "resolved" "https://registry.npmjs.org/queue-microtask/-/queue-microtask-1.2.3.tgz"
   "version" "1.2.3"
 
-"ra-core@^3.14.0", "ra-core@^3.17.0":
+"ra-core@^3.14.0", "ra-core@^3.17.0", "ra-core@^3.9.0":
   "integrity" "sha512-nwlOndh+eGJEz2Cn0McNbtXg+pulG6C2yT4mKC+lp523u820Sqn2eStn7IKtnfIvClXs/z8Ttyh9fR4sVlFrGw=="
   "resolved" "https://registry.npmjs.org/ra-core/-/ra-core-3.17.0.tgz"
   "version" "3.17.0"
@@ -9601,6 +9609,13 @@
     "prop-types" "^15.6.1"
     "query-string" "^5.1.1"
     "reselect" "~3.0.0"
+
+"ra-data-fakerest@^3.13.5":
+  "integrity" "sha512-LmxjPt8wl3hZYjB4lQViYSiel00i8pF1kXy/6oC1HSja4tz9QLGQ4ywGUPV4jyTvSQgaQc7/PTIuBnsp5rlDCw=="
+  "resolved" "https://registry.npmjs.org/ra-data-fakerest/-/ra-data-fakerest-3.13.5.tgz"
+  "version" "3.13.5"
+  dependencies:
+    "fakerest" "^3.0.0"
 
 "ra-data-json-server@^3.17.0":
   "integrity" "sha512-CHd0gqK8IyVhQQjjnuTscHO/fALQufoJ5GvpgfhFPby7CHa6ip1F8giOlV0aaxN3DBDtgzDFi2Sa0DfXkuePgQ=="

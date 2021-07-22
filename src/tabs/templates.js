@@ -6,18 +6,14 @@ const titleName = (<h1>Templates</h1>)
 
 export const TemplateList = props => {
     const classes = useStyles();
+    console.log(props);
     return (
         <React.Fragment>
             {titleName}
             <div className={classes.row}>
                 <div className={classes.column}>
-                    <ListA {...props}
-                        resource={"users"}
-                    />
-                </div>
-                <div className={classes.column}>
                     <ListB {...props}
-                        resource={"posts"} />
+                        />
                 </div>
             </div>
 
