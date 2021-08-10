@@ -97,23 +97,6 @@ export default {
     },
 
     create: (resource, params) => {
-        // var requestJson = {
-        //     openstack: [
-
-        //     ],
-        //     cloudstack: [
-        //     ]
-        // }
-
-        // console.log(params.data);
-
-        // for (var ids of params.ids) {
-        //     if (ids[0] === "d")
-        //         requestJson.openstack.push({ snap_id: "" + ids.substr(1) });
-        //     else
-        //         requestJson.cloudstack.push({ snap_id: "" + ids.substr(1) })
-        // }
-
         console.log(params.data);
         return httpClient(`${apiUrl}/${resource}`, {
             method: 'POST',

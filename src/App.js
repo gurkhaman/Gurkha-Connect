@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Admin, Resource, ListGuesser, EditGuesser, Edit } from 'react-admin';
+import auth_provider from './auth_provider/auth_provider';
 import jsonServerProvider from 'ra-data-json-server';
 import { CustomLayout } from './utilities/layout';
 import Menu from './utilities/menu'
@@ -14,6 +15,7 @@ import GroupIcon from '@material-ui/icons/Group';
 import fakeDataProvider from 'ra-data-fakerest';
 import dataProvider from './data_provider/data_provider';
 import {PostEdit, PostList, PostCreate} from './tabs/posts';
+import customRoutes from './utilities/customRoutes';
 
 //  const dataProvider = jsonServerProvider('https://jsonplaceholder.typicode.com');
 
@@ -47,6 +49,7 @@ const App = () => (
     {/* <Resource name="cloudstack" list={CloudStack} /> */}
     {/* <Resource name="openstack" list={OpenStack} /> */}
     <Resource name="posts" list={PostList} create={PostCreate} />
+    <Resource name="logs" />
     {/* <Resource name="showsnapshots" list={Snapshotlist} create={SnapshotCreate} /> */}
   </Admin>);
 

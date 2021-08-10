@@ -30,6 +30,6 @@ export default {
     // get the current user identity
     getIdentity: () =>  Promise.resolve({
         id: 'user',
-        fullName: 'Arogya',
+        fullName: 'username',
     }),
 };
