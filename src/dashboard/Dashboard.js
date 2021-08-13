@@ -1,6 +1,9 @@
 import * as React from 'react';
-import { Card, CardContent, CardHeader, makeStyles, List, ListItem, ListItemText } from '@material-ui/core';
-import { XYPlot, XAxis, YAxis, HorizontalGridLines, LineSeries, RadialChart } from 'react-vis';
+import { Card, CardContent, makeStyles, List, ListItem, ListItemText } from '@material-ui/core';
+import { Link } from 'react-router-dom';
+import { VictoryPie, VictoryAnimation } from 'victory';
+import { useGetList, Loading, Error, useGetMany, useGetOne, useGetCloudComponents, useDataProvider, useQuery } from 'react-admin';
+
 
 const useStyles = makeStyles({
     column: {
@@ -27,36 +30,29 @@ const useStyles = makeStyles({
 
 });
 
-const componentsResponse = {
-    nova: false,
-    heat: false,
-    cinder: false,
-    neutron: false,
-    keystone: false,
-    swift: false,
-    agent: false,
-    management: false,
-}
 
-var openstackComponents = {};
-var cloudstackComponents = {};
 
-for (var component in componentsResponse) {
-    if (component == 'agent' || component == 'management') {
-        cloudstackComponents[component] = componentsResponse[component];
-    } else
-        openstackComponents[component] = componentsResponse[component];
-}
 
-const ComponentList = (components) => {
+
+const CloudComponentsData = (components) => {
+    const { data } = useGetOne('check', 0);
+    const componentsResponse = data;
+
+    for (var component in componentsResponse) {
+        if (component == 'agent' || component == 'management') {
+            cloudstackComponents[component] = componentsResponse[component];
+        } else if (component != 'id')
+            openstackComponents[component] = componentsResponse[component];
+    }
+
     return (
         <List>
             {Object.keys(components).map((record) => (
                 <ListItem
                     key={record}
                     button
-                    // component={Link}
-                    // to={`/reviews/${record.id}`}
+                    component={Link}
+                    to={`/${record}/log`}
                     alignItems="flex-start"
                 >
                     <ListItemText
@@ -69,19 +65,76 @@ const ComponentList = (components) => {
             ))}
         </List>
     )
+
 }
 
-const GraphMaker = () => {
+var openstackComponents = {};
+var cloudstackComponents = {};
+
+const metricFilter = (metric, toFilter) => {
+    return metric.reduce((obj, key) => ({ ...obj, [key]: toFilter[key] }), {});
+}
+
+
+const VMMetricsData = (cloudService) => {
+    // const { data } = useGetMany('statistics', [0]);
+    // console.log(data);
+    const metricData = {
+        openstack_metrics: {
+            vcpu: 4,
+            vcpu_used: 1,
+            memory: 9965,
+            memory_used: 512,
+            storage: 48,
+            storage_used: 0,
+        },
+
+        cloudstack_metrics: {
+            vcpu: 16,
+            vcpu_used: 3,
+            memory: 32354942976,
+            memory_used: 1879048192,
+            storage: 53660876800,
+            storage_used: 26289897472,
+        }
+    }
+
+    const vcpu = ['vcpu', 'vcpu_used'], memory = ['memory', 'memory_used'], storage = ['storage', 'storage_used'];
+    let vcpuObject, memoryObject, storageObject;
+
+
+    if (cloudService === 'openstack') {
+        vcpuObject = metricFilter(vcpu, metricData.openstack_metrics);
+        memoryObject = metricFilter(memory, metricData.openstack_metrics);
+        storageObject = metricFilter(storage, metricData.openstack_metrics);
+    }else{
+        vcpuObject = metricFilter(vcpu, metricData.cloudstack_metrics);
+        memoryObject = metricFilter(memory, metricData.cloudstack_metrics);
+        storageObject = metricFilter(storage, metricData.cloudstack_metrics);
+    }
+
+    return (GraphMaker(vcpuObject, memoryObject, storageObject));
+}
+
+
+const GraphMaker = (...args) => {
+    const datum = args
     return (
         <div>
-            <RadialChart
-                data={[{ angle: 100 }, { angle: 120 }, { angle: 160 }]}
-                width={200}
-                height={200} />
-            <RadialChart
-                data={[{ angle: 200 }, { angle: 120 }, { angle: 160 }]}
-                width={200}
-                height={200} />
+            {datum.map(metric => {
+                const keyArray = Object.keys(metric);
+                return (
+                    <VictoryPie
+                        colorScale={["cyan", "navy"]}
+                        width={150} height={150}
+                        data={[
+                            { x: keyArray[0], y: metric[keyArray[0]], label: metric[keyArray[0]] },
+                            { x: keyArray[1], y: metric[keyArray[1]], label: metric[keyArray[1]] },
+                        ]}
+                        style={{ labels: { fill: "black", fontSize: 4, fontWeight: "bold" } }}
+                    />
+                )
+            })}
         </div>
     )
 }
@@ -101,10 +154,10 @@ export default () => {
 
                         <div className={classes.row} >
                             <div className={classes.column} >
-                                {GraphMaker()}
+                                {VMMetricsData('openstack')}
                             </div>
                             <div className={classes.column}>
-                                {ComponentList(openstackComponents)}
+                                {CloudComponentsData(openstackComponents)}
                             </div>
                         </div>
                     </CardContent>
@@ -121,10 +174,10 @@ export default () => {
 
                         <div className={classes.row} >
                             <div className={classes.column} >
-                                {GraphMaker()}
+                                {VMMetricsData('cloudstack')}
                             </div>
                             <div className={classes.column}>
-                                {ComponentList(cloudstackComponents)}
+                                {CloudComponentsData(cloudstackComponents)}
                             </div>
                         </div>
                     </CardContent>

@@ -1,7 +1,7 @@
 import { fetchUtils } from 'react-admin';
 import { stringify } from 'query-string';
 
-const apiUrl = 'https://my.api.com/';
+const apiUrl = 'http://52.78.82.160:7014';
 const httpClient = fetchUtils.fetchJson;
 
 export default {
@@ -9,22 +9,38 @@ export default {
         const { page, perPage } = params.pagination;
         const { field, order } = params.sort;
         const query = {
-            sort: JSON.stringify([field, order]),
-            range: JSON.stringify([(page - 1) * perPage, page * perPage - 1]),
-            filter: JSON.stringify(params.filter),
+            ...fetchUtils.flattenObject(params.filter),
+            _sort: field,
+            _order: order,
+            _start: (page - 1) * perPage,
+            _end: page * perPage,
         };
         const url = `${apiUrl}/${resource}?${stringify(query)}`;
 
-        return httpClient(url).then(({ headers, json }) => ({
-            data: json,
-            total: parseInt(headers.get('content-range').split('/').pop(), 10),
-        }));
+        return httpClient(url).then(({ headers, json }) => {
+            if (!headers.has('X-Total-Count')) {
+                throw new Error(
+                    'The X-Total-Count header is missing in the HTTP Response. The jsonServer Data Provider expects responses for lists of resources to contain this header with the total number of results to build the pagination. If you are using CORS, did you declare X-Total-Count in the Access-Control-Expose-Headers header?'
+                );
+            }
+            return {
+                data: json,
+                total: parseInt(
+                    headers.get('X-Total-Count').split('/').pop(),
+                    10
+                ),
+
+            };
+            
+        });
     },
 
-    getOne: (resource, params) =>
-        httpClient(`${apiUrl}/${resource}/${params.id}`).then(({ json }) => ({
+
+    getOne: (resource, params) => {
+        return httpClient(`${apiUrl}/${resource}`).then(({ json }) => ({
             data: json,
-        })),
+        }))
+    },
 
     getMany: (resource, params) => {
         const query = {
@@ -47,10 +63,21 @@ export default {
         };
         const url = `${apiUrl}/${resource}?${stringify(query)}`;
 
-        return httpClient(url).then(({ headers, json }) => ({
-            data: json,
-            total: parseInt(headers.get('content-range').split('/').pop(), 10),
-        }));
+        return httpClient(url).then(({ headers, json }) => {
+            if (!headers.has('X-Total-Count')) {
+                throw new Error(
+                    'The X-Total-Count header is missing in the HTTP Response. The jsonServer Data Provider expects responses for lists of resources to contain this header with the total number of results to build the pagination. If you are using CORS, did you declare X-Total-Count in the Access-Control-Expose-Headers header?'
+                );
+            }
+            return {
+                data: json,
+                total: parseInt(
+                    headers.get('X-Total-Count').split('/').pop(),
+                    10
+                ),
+
+            };
+        });
     },
 
     update: (resource, params) =>
@@ -61,7 +88,7 @@ export default {
 
     updateMany: (resource, params) => {
         const query = {
-            filter: JSON.stringify({ id: params.ids}),
+            filter: JSON.stringify({ id: params.ids }),
         };
         return httpClient(`${apiUrl}/${resource}?${stringify(query)}`, {
             method: 'PUT',
@@ -84,11 +111,17 @@ export default {
 
     deleteMany: (resource, params) => {
         const query = {
-            filter: JSON.stringify({ id: params.ids}),
+            filter: JSON.stringify({ id: params.ids }),
         };
         return httpClient(`${apiUrl}/${resource}?${stringify(query)}`, {
             method: 'DELETE',
             body: JSON.stringify(params.data),
         }).then(({ json }) => ({ data: json }));
     },
+
+    getCloudComponents: (resource) => {
+        return httpClient(`${apiUrl}/${resource}`).then(({ json }) => ({
+            data: json,
+        }));
+    }
 };
