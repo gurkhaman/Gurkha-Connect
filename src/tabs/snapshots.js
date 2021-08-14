@@ -13,9 +13,12 @@ import {
     ReferenceInput,
     SelectInput,
     TextInput,
-    Create
+    Create,
+    BulkDeleteButton
 } from 'react-admin';
 import { makeStyles } from '@material-ui/core/styles';
+import { CreateInstanceButton } from '../utilities/customresetviewsbutton';
+
 
 const titleName = (<h1>Snapshots</h1>)
 const cloudStackTitle = (<h3>CloudStack</h3>)
@@ -37,41 +40,25 @@ const useStyles = makeStyles({
     },
 
 })
-
+const SnapshotBulkActionButtons = props => (
+    <React.Fragment>
+        <CreateInstanceButton {...props} />
+        <BulkDeleteButton {...props}/>
+    </React.Fragment>
+)
 
 export const Snapshotlist = props => {
     const classes = useStyles();
     return (
-        <React.Fragment>
-            {titleName}
-            <div className={classes.row}>
-                <div className={classes.column}>
-                    <div className={classes.centerText}>
-                        {openStackTitle}
-                    </div>
-                    <List {...props} filter={{ cloud: "openstack" }} >
-                        <Datagrid rowClick="edit">
-                            <TextField source="snap_id" label="Snap ID" />
-                            <TextField source="snap_name" />
-                            <TextField source="cloud" />
-                        </Datagrid>
-                    </List>
 
-                </div>
-                <div className={classes.column}>
-                    <div className={classes.centerText}>
-                        {cloudStackTitle}
-                    </div>
-                    <List {...props} filter={{ cloud: "cloudstack" }} >
-                        <Datagrid rowClick="edit">
-                            <TextField source="snap_id" label="Snap ID" />
-                            <TextField source="snap_name" />
-                            <TextField source="cloud" />
-                        </Datagrid>
-                    </List>
-                </div>
-            </div>
-        </React.Fragment>
+        <List {...props} bulkActionButtons={<SnapshotBulkActionButtons />}>
+            <Datagrid rowClick="edit">
+                <TextField source="snap_id" label="Snap ID" />
+                <TextField source="snap_name" />
+                <TextField source="snapcloud" />
+                <TextField source="os" />
+            </Datagrid>
+        </List>
     );
 }
 

@@ -1,13 +1,13 @@
 // https://marmelab.com/react-admin/DataProviders.html#example-implementation
 
-// TODO
-// THis is a tet for todo
+
 
 
 import { fetchUtils, DataProvider } from 'ra-core';
 import { stringify } from 'query-string';
+import { useListContext } from 'react-admin';
 
-const apiUrl = 'https://jsonplaceholder.typicode.com';
+const apiUrl = 'http://3.36.63.193:8000';
 const httpClient = fetchUtils.fetchJson;
 
 export default {
@@ -24,30 +24,55 @@ export default {
         const url = `${apiUrl}/${resource}?${stringify(query)}`;
 
         return httpClient(url).then(({ headers, json }) => {
-            for (var item of json) {
-                if (item.id % 2 == 0)
-                    item.id = "c" + item.id;
-                else
-                    item.id = "d" + item.id;
-            }
 
             if (!headers.has('x-total-count')) {
                 throw new Error(
                     'The X-Total-Count header is missing in the HTTP Response. The jsonServer Data Provider expects responses for lists of resources to contain this header with the total number of results to build the pagination. If you are using CORS, did you declare X-Total-Count in the Access-Control-Expose-Headers header?'
                 );
             }
-            return {
-                data: json,
-                total: parseInt(
-                    headers.get('x-total-count').split('/').pop(),
-                    10
-                ),
+            let perResourceData = {};
+            // TODO: Do something when the response is empty i.e. nothing in the DB
 
-            };
+            if (resource == 'showsnapshots') {
+                perResourceData = json.showsnapshots;
+                for (var snap of perResourceData) {
+                    if (snap.snapcloud == 'cloudstack') {
+                        snap.snap_id = 'cloud-' + snap.snap_id;
+                    } else if (snap.snapcloud == 'openstack') {
+                        snap.snap_id = 'open-' + snap.snap_id;
+                    }
+                }
+                return {
+                    data: perResourceData.map(resource => ({ ...resource, id: resource.snap_id })),
+                    total: parseInt(
+                        headers.get('x-total-count').split('/').pop(),
+                        10
+                    ),
+                };
+            }
+            else if (resource == 'showinstances') {
+                perResourceData = json.showinstances;
+                console.log(perResourceData);
+                for (var ins of perResourceData) {
+                    console.log(ins);
+                    if (ins.snapcloud == 'cloudstack') {
+                        ins.ins_id = 'cloud-' + ins.ins_id;
+                    } else if (ins.snapcloud == 'openstack') {
+                        ins.ins_id = 'open-' + ins.ins_id;
+                    }
+                }
+                return {
+                    data: perResourceData.map(resource => ({ ...resource, id: resource.ins_id })),
+                    total: parseInt(
+                        headers.get('x-total-count').split('/').pop(),
+                        10
+                    ),
+                };
+            }
+
 
         });
     },
-
     getOne: (resource, params) =>
         httpClient(`${apiUrl}/${resource}/${params.id}`).then(({ json }) => ({
             data: json,
@@ -130,24 +155,33 @@ export default {
     },
 
     deleteMany: (resource, params) => {
+        let deleteResource = '';
+
         var requestJson = {
             openstack: [
 
             ],
             cloudstack: [
+
             ]
         }
 
-        for (var ids of params.ids) {
-            if (ids[0] === "d")
-                requestJson.openstack.push({ snap_id: "" + ids.substr(1) });
-            else
-                requestJson.cloudstack.push({ snap_id: "" + ids.substr(1) })
+        if (resource == 'showsnapshots') {
+            deleteResource = 'deletesnapshots';
+
+            for (var id of params.ids) {
+                if (id.includes('open-')) {
+                    requestJson.openstack.push({ snap_id: id.replace('open-', '') });
+                } else if (id.includes('cloud-')) {
+                    requestJson.cloudstack.push({ snap_id: id.replace('cloud-', '') });
+                }
+            }
         }
 
-        return httpClient(`${apiUrl}/${resource}`, {
+        return httpClient(`${apiUrl}/${deleteResource}`, {
             method: 'DELETE',
             body: JSON.stringify(requestJson)
         }).then(({ json }) => ({ data: json }));
     },
+
 };

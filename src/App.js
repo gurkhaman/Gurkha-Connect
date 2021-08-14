@@ -19,6 +19,7 @@ import { PostEdit, PostList, PostCreate } from './tabs/posts';
 import customRoutes from './utilities/customRoutes';
 import { NovaLogs } from './tabs/logs/nova_logs';
 import { ManagementLogs } from './tabs/logs/management_logs';
+import { InstanceList } from './tabs/instances';
 
 //  const dataProvider = jsonServerProvider('https://jsonplaceholder.typicode.com');
 
@@ -43,10 +44,12 @@ const fakedataProvider = fakeDataProvider({
 
 const App = () => (
   // layout={(props) => <CustomLayout {...props} menu={Menu} />}
-  <Admin dataProvider={log_monitor_dataprovider} dashboard={Dashboard} menu={Menu} >
+  <Admin dataProvider={dataProvider} dashboard={Dashboard}>
     <Resource name="users" list={TemplateList} />
     <Resource name="check" />
-
+    <Resource name="showsnapshots" list={Snapshotlist} />
+    <Resource name ="showinstances" list={InstanceList} />
+    <Resource name="snaps"/>
     {/* <Resource name="posts" list={InstanceList} /> */}
     {/* <Resource name="cloudstack" list={CloudStack} /> */}
     {/* <Resource name="openstack" list={OpenStack} /> */}
