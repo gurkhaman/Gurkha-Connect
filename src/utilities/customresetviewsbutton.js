@@ -49,6 +49,7 @@ export const MigrateInstanceButton = ({ selectedIds }) => {
                 unselectAll('showinstances');
             },
             onFailure: error => notify('Error: Instance not migrated', 'warning'),
+            
         }
     );
 
