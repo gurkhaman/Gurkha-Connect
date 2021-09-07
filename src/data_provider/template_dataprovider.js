@@ -94,7 +94,7 @@ export default {
         ).then(responses => ({ data: responses.map(({ json }) => json.id) })),
 
     create: (resource, params) =>
-        httpClient(`${apiUrl}/${resource}/`, {
+        httpClient(`${apiUrl}/${resource}/*/`, {
             method: 'POST',
             body: JSON.stringify(params.data),
         }).then(({ json }) => ({

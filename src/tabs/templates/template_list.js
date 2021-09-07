@@ -2,7 +2,7 @@ import * as React from 'react';
 import {
     List, useShowController, useListController,
     ListProps, TextField, DateField, Datagrid, useGetOne, Loading, TopToolbar, ExportButton, BulkDeleteButton, Button,
-    useDelete, useGetMany, ReferenceField, SimpleShowLayout, RichTextField, useUpdate, useNotify, CreateButton
+    useDelete, useGetMany, ReferenceField, SimpleShowLayout, RichTextField, useUpdate, useNotify, CreateButton, useRefresh
 } from 'react-admin';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
@@ -30,7 +30,8 @@ const useStyles = makeStyles(({
 
 
 const ListActions = (props) => {
-    const [deleteTemplates, { loading, error }] = useDelete('template', '*');
+    const refresh = useRefresh();
+    const [deleteTemplates, { loading, error }] = useDelete('template', '*', { onSuccess: () => { refresh(); } });
     if (error) { console.log(error) };
 
     return (
@@ -38,11 +39,20 @@ const ListActions = (props) => {
             {/* <Button label="Upload Template File">
                 <PublishIcon/>
             </Button> */}
-            <CreateButton label="Upload Template" icon={<PublishIcon/>}>
+            <CreateButton label="Upload Template" icon={<PublishIcon />}>
             </CreateButton>
-            <ExportButton />
+            {/* <ExportButton /> */}
+            <Button label="Upload Template File (TEMP)"
+                onClick={uploadTemplateFile}
+            >
+            </Button>
             <Button label="Delete All Templates"
                 onClick={deleteTemplates}
+            >
+                <ActionDelete />
+            </Button>
+            <Button label="Destroy Terraform"
+                onClick={destroyTerraform}
             >
                 <ActionDelete />
             </Button>
@@ -50,10 +60,19 @@ const ListActions = (props) => {
     );
 }
 
+const uploadTemplateFile = () => {
+
+    return 0;
+}
+
+const destroyTerraform = () => {
+    return 0;
+}
+
 
 
 export const TemplateList = props => (
-    <List {...props} actions={<ListActions />}>
+    <List {...props} actions={<ListActions />} resource="template">
         <Datagrid rowClick="expand" expand={<TemplateShow />} >
             <TextField source="name" />
             <TextField source="upload_files" />
@@ -63,37 +82,47 @@ export const TemplateList = props => (
     </List>
 );
 
-const TemplateDeleteSingle = (record, resource) => {
+const TemplateDeleteSingle = (id, resource) => {
     const [deleteSingleTemplate, { loading, error }] = useDelete(
         `${resource}`,
-        `${record.name}`,
+        `${id}`,
     );
     if (error) { console.log("Error: Template deletion unsuccessful -> " + error); }
     return deleteSingleTemplate;
 }
 
-const TemplateConvert = (record, resource) => {
+const TemplateConvert = (id, resource) => {
     const [convertTemplate, { loading, error }] = useUpdate(
         `${resource}`,
-        `${record.name}`,
+        `${id}`,
         "",
     );
     if (error) { console.log("Error: Template conversion unsuccessful -> " + error); }
     return convertTemplate;
 }
 
-const TemplateShow = ({ id, record, resource }) => {
+const TemplateShow = ({ id, resource }) => {
     const classes = useStyles();
     const notify = useNotify();
 
-    console.log(record);
+
+    // var requestOptions = {
+    //     method: 'GET',
+    //     redirect: 'follow'
+    // };
+
+    // fetch(`http://3.36.115.215:8000/template/${id}/`, requestOptions)
+    //     .then(response => response.text())
+    //     .then(result => console.log(result))
+    //     .catch(error => console.log('error', error));
+
 
     return (
         <Card className={classes.root}>
             <CardContent>
                 <SimpleShowLayout>
-                    <ReferenceField label="Name" source="name" reference="template">
-                        <TextField source="info" />
+                    <ReferenceField label="Resource" source="id" reference="template">
+                        <TextField source="info.resource" />
                     </ReferenceField>
                 </SimpleShowLayout>
 
@@ -106,14 +135,20 @@ const TemplateShow = ({ id, record, resource }) => {
                     <Button
                         aria-label="Delete Template"
                         label="Delete Template"
-                        onClick={TemplateDeleteSingle(record, resource)}>
+                        onClick={TemplateDeleteSingle(id, resource)}>
                         <ActionDelete />
                     </Button>
                     <Button
                         label="Convert Template"
-                        onClick={TemplateConvert(record, resource)}>
+                        onClick={TemplateConvert(id, resource)}>
                         <AutorenewIcon />
                     </Button>
+                    {/* <Button
+                        label="Apply Terraform"
+                        // onClick={TemplateConvert(id, resource)}
+                        >
+                        <AutorenewIcon />
+                    </Button> */}
 
                 </Grid>
             </CardContent>

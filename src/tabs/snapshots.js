@@ -14,7 +14,8 @@ import {
     SelectInput,
     TextInput,
     Create,
-    BulkDeleteButton
+    BulkDeleteButton,
+    DateField
 } from 'react-admin';
 import { makeStyles } from '@material-ui/core/styles';
 import { CreateInstanceButton } from '../utilities/customresetviewsbutton';
@@ -57,6 +58,7 @@ export const Snapshotlist = props => {
                 <TextField source="snap_name" />
                 <TextField source="snapcloud" />
                 <TextField source="os" />
+                <TextField source="created" />
             </Datagrid>
         </List>
     );

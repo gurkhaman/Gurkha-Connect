@@ -12,7 +12,7 @@ import { nestList } from "./lists/lists";
 import authProvider from './auth_provider/auth_provider'
 import GroupIcon from '@material-ui/icons/Group';
 import fakeDataProvider from 'ra-data-fakerest';
-// import dataProvider from './data_provider/data_provider';
+import dataProvider from './data_provider/data_provider';
 import log_monitor_dataprovider from './data_provider/log_monitor_dataprovider';
 import { PostEdit, PostList, PostCreate } from './tabs/posts';
 import customRoutes from './utilities/customRoutes';
@@ -63,7 +63,7 @@ const App = () => (
     <Resource name="swift/log" list={SwiftLogs} />
     <Resource name="agent/log" list={AgentLogs} />
     <Resource name="management/log" list={ManagementLogs} />
-    <Resource name="template" list={TemplateList} create={TemplateUpload} />
+    <Resource name="template" list={TemplateList} create={TemplateUpload}/>
   </Admin>);
 
 export default App;

@@ -15,12 +15,13 @@ const SnapshotBulkActionButtons = props => (
 
 
 export const InstanceList = props => (
-    <List {...props} bulkActionButtons={<SnapshotBulkActionButtons/>} pagination={false}>
+    <List {...props} bulkActionButtons={<SnapshotBulkActionButtons/>}>
         <Datagrid rowClick="edit">
             <TextField source="ins_id" />
             <TextField source="ins_name" />
             <TextField source="vol_id" />
             <TextField source="snapcloud" />
+            <TextField source="created" />
         </Datagrid>
     </List>
 );  
