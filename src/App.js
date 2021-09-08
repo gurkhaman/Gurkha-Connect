@@ -28,6 +28,7 @@ import { InstanceList } from './tabs/instances';
 import template_dataprovider from './data_provider/template_dataprovider';
 import {TemplateList, TemplateListWithDrawer} from './tabs/templates/template_list'
 import { TemplateUpload } from './tabs/templates/template_upload';
+import LoginForm from './tabs/login_layout';
 //  const dataProvider = jsonServerProvider('https://jsonplaceholder.typicode.com');
 
 const fakedataProvider = fakeDataProvider({
@@ -48,7 +49,7 @@ const fakedataProvider = fakeDataProvider({
 
 const App = () => (
   // layout={(props) => <CustomLayout {...props} menu={Menu} />}
-  <Admin dataProvider={template_dataprovider} dashboard={Dashboard}>
+  <Admin dataProvider={template_dataprovider} dashboard={Dashboard} authProvider={authProvider} customRoutes={customRoutes} loginPage={LoginForm}>
     <Resource name="users"/>
     <Resource name="check" />
     <Resource name="showsnapshots" list={Snapshotlist} />
