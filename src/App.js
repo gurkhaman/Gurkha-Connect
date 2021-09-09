@@ -29,6 +29,7 @@ import template_dataprovider from './data_provider/template_dataprovider';
 import {TemplateList, TemplateListWithDrawer} from './tabs/templates/template_list'
 import { TemplateUpload } from './tabs/templates/template_upload';
 import LoginForm from './tabs/login_layout';
+import { ComponentLogs } from './tabs/logs/component_logs';
 //  const dataProvider = jsonServerProvider('https://jsonplaceholder.typicode.com');
 
 const fakedataProvider = fakeDataProvider({
@@ -49,21 +50,26 @@ const fakedataProvider = fakeDataProvider({
 
 const App = () => (
   // layout={(props) => <CustomLayout {...props} menu={Menu} />}
-  <Admin dataProvider={template_dataprovider} dashboard={Dashboard} authProvider={authProvider} customRoutes={customRoutes} loginPage={LoginForm}>
+  <Admin 
+  dataProvider={log_monitor_dataprovider} 
+  dashboard={Dashboard} 
+  // authProvider={authProvider} 
+  customRoutes={customRoutes} 
+  loginPage={LoginForm}>
     <Resource name="users"/>
     <Resource name="check" />
     <Resource name="showsnapshots" list={Snapshotlist} />
     <Resource name ="showinstances" list={InstanceList} />
     <Resource name="snaps"/>
     <Resource name="posts" list={PostList} create={PostCreate} />
-    <Resource name="nova/log" list={NovaLogs} />
-    <Resource name="heat/log" list={HeatLogs} />
-    <Resource name="cinder/log" list={CinderLogs} />
-    <Resource name="neutron/log" list={NeutronLogs} />
-    <Resource name="keystone/log" list={KeystoneLogs} />
-    <Resource name="swift/log" list={SwiftLogs} />
-    <Resource name="agent/log" list={AgentLogs} />
-    <Resource name="management/log" list={ManagementLogs} />
+    <Resource name="nova/log" list={ComponentLogs} />
+    <Resource name="heat/log" list={ComponentLogs} />
+    <Resource name="cinder/log" list={ComponentLogs} />
+    <Resource name="neutron/log" list={ComponentLogs} />
+    <Resource name="keystone/log" list={ComponentLogs} />
+    <Resource name="swift/log" list={ComponentLogs} />
+    <Resource name="agent/log" list={ComponentLogs} />
+    <Resource name="management/log" list={ComponentLogs} />
     <Resource name="template" list={TemplateList} create={TemplateUpload}/>
   </Admin>);
 
