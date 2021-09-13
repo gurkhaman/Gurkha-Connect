@@ -29,7 +29,7 @@ const rowStyle = (selectedRow) => (record) => {
             borderLeftWidth: 5,
             borderLeftStyle: 'solid',
         };
-    if (record.level === 'WARNING')
+    if (record.level === 'WARNING' || record.level === 'WARN')
         return {
             ...style,
             borderLeftColor: red[500],

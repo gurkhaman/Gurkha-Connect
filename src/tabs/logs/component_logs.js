@@ -6,8 +6,6 @@ import rowStyle from '../../utilities/log_row_style';
 
 const ListActions = (props) => {
     const refresh = useRefresh();
-    // const [deleteTemplates, { loading, error }] = useDelete('template', '*', { onSuccess: () => { refresh(); } });
-    // if (error) { console.log(error) };
 
     const syncLogs = () => {
         const syncRequest = new Request('http://52.78.82.160:7014/sync', {
