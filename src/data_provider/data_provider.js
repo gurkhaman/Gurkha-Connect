@@ -1,8 +1,5 @@
 // https://marmelab.com/react-admin/DataProviders.html#example-implementation
 
-
-
-
 import { fetchUtils, DataProvider } from 'ra-core';
 import { stringify } from 'query-string';
 import { useListContext } from 'react-admin';

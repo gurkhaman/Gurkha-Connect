@@ -21,18 +21,30 @@ import classnames from 'classnames';
 // import TemplateShow from './template_show';
 import { render } from '@testing-library/react';
 
-
-const useStyles = makeStyles(({
-    root: { width: 600, margin: 'auto' },
-    spacer: { height: 20 },
-    invoices: { margin: '10px 0' },
+const useStyles = makeStyles(theme => ({
+    root: {
+        display: 'flex',
+    },
+    list: {
+        flexGrow: 1,
+        transition: theme.transitions.create(['all'], {
+            duration: theme.transitions.duration.enteringScreen,
+        }),
+        marginRight: 0,
+    },
+    listWithDrawer: {
+        marginRight: 400,
+    },
+    drawerPaper: {
+        zIndex: 100,
+    },
 }));
-
 
 const ListActions = (props) => {
     const refresh = useRefresh();
-    const [deleteTemplates, { loading, error }] = useDelete('template', '*', { onSuccess: () => { refresh(); } });
+    const [deleteTemplates, { loading, error, success }] = useDelete('template', '*');
     if (error) { console.log(error) };
+    if (success) refresh();
 
     return (
         <TopToolbar>
@@ -42,45 +54,94 @@ const ListActions = (props) => {
             <CreateButton label="Upload Template" icon={<PublishIcon />}>
             </CreateButton>
             {/* <ExportButton /> */}
-            <Button label="Upload Template File (TEMP)"
-                onClick={uploadTemplateFile}
-            >
-            </Button>
+
             <Button label="Delete All Templates"
                 onClick={deleteTemplates}
+                disabled={loading}
             >
                 <ActionDelete />
             </Button>
-            <Button label="Destroy Terraform"
-                onClick={destroyTerraform}
-            >
-                <ActionDelete />
-            </Button>
+            {<DestroyTerraform />}
         </TopToolbar>
     );
 }
+const DestroyTerraform = () => {
+    const [destroyRequest, {data, loading, error}] = useUpdate('template', '*');
+    // const notify = useNotify();
+    // if(error) notify(data);
 
-const uploadTemplateFile = () => {
+    return (
+        <Button label="Destroy Terraform"
+            onClick={destroyRequest}
+        >
+            <ActionDelete />
+        </Button>
+    )
 
-    return 0;
 }
 
-const destroyTerraform = () => {
-    return 0;
-}
+export const TemplateList = props => {
+    const classes = useStyles();
+    const history = useHistory();
 
+    const handleClose = useCallback(() => {
+        history.push('/template');
+    }, [history]);
 
+    // <List {...props} actions={<ListActions />} resource="template">
+    //     <Datagrid rowClick="expand" expand={<TemplateShow />} >
+    //         <TextField source="id" />
+    //         <TextField source="name" />
+    //         <TextField source="upload_files" />
+    //         <TextField source="description" />
+    //         <DateField source="uploaded_at" />
+    //     </Datagrid>
+    // </List>
 
-export const TemplateList = props => (
-    <List {...props} actions={<ListActions />} resource="template">
-        <Datagrid rowClick="expand" expand={<TemplateShow />} >
-            <TextField source="name" />
-            <TextField source="upload_files" />
-            <TextField source="description" />
-            <DateField source="uploaded_at" />
-        </Datagrid>
-    </List>
-);
+    return (
+        <div className={classes.root}>
+            <Route path="/reviews/:id">
+                {({ match }) => {
+                    const isMatch = !!(
+                        match &&
+                        match.params &&
+                        match.params.id !== 'create'
+                    );
+
+                    return (
+                        <Fragment>
+                            <List
+                                {...props}
+                                className={classnames(classes.list, {
+                                    [classes.listWithDrawer]: isMatch,
+                                })}
+                                actions={<ListActions />} resource="template">
+                                <Datagrid rowClick="expand" expand={<TemplateShow/>} >
+                                    <TextField source="id" />
+                                    <TextField source="name" />
+                                    <TextField source="upload_files" />
+                                    <TextField source="description" />
+                                    <DateField source="uploaded_at" />
+                                </Datagrid>
+                            </List>
+                            <Drawer
+                                variant="persistent"
+                                open={isMatch}
+                                anchor="right"
+                                onClose={handleClose}
+                                classes={{
+                                    paper: classes.drawerPaper,
+                                }}
+                            >
+
+                            </Drawer>
+                        </Fragment>
+                    );
+                }}
+            </Route>
+        </div>
+    )
+};
 
 const TemplateDeleteSingle = (id, resource) => {
     const [deleteSingleTemplate, { loading, error }] = useDelete(
@@ -101,10 +162,10 @@ const TemplateConvert = (id, resource) => {
     return convertTemplate;
 }
 
-const TemplateShow = ({ id, resource }) => {
+const TemplateShow = ({ id, resource, record }) => {
     const classes = useStyles();
     const notify = useNotify();
-
+    console.log(record);
 
     // var requestOptions = {
     //     method: 'GET',
@@ -116,12 +177,11 @@ const TemplateShow = ({ id, resource }) => {
     //     .then(result => console.log(result))
     //     .catch(error => console.log('error', error));
 
-
     return (
         <Card className={classes.root}>
             <CardContent>
                 <SimpleShowLayout>
-                    <ReferenceField label="Resource" source="id" reference="template">
+                    <ReferenceField label="Resource" source="id" reference="template" basePath="/template" link={false}>
                         <TextField source="info.resource" />
                     </ReferenceField>
                 </SimpleShowLayout>

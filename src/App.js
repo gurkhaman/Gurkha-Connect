@@ -51,11 +51,12 @@ const fakedataProvider = fakeDataProvider({
 const App = () => (
   // layout={(props) => <CustomLayout {...props} menu={Menu} />}
   <Admin 
-  dataProvider={log_monitor_dataprovider} 
+  dataProvider={template_dataprovider} 
   dashboard={Dashboard} 
-  // authProvider={authProvider} 
+  authProvider={authProvider} 
   customRoutes={customRoutes} 
-  loginPage={LoginForm}>
+  loginPage={LoginForm}
+  >
     <Resource name="users"/>
     <Resource name="check" />
     <Resource name="showsnapshots" list={Snapshotlist} />

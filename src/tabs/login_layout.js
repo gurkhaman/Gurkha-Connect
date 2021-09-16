@@ -10,6 +10,9 @@ import {
     TextField,
 } from '@material-ui/core';
 import LockIcon from '@material-ui/icons/Lock';
+import { Login } from 'ra-ui-materialui';
+import auth_provider from '../auth_provider/auth_provider';
+import { Notification, useTranslate, useLogin, useNotify } from 'react-admin';
 const useStyles = makeStyles(theme => ({
     main: {
         display: 'flex',
@@ -54,13 +57,19 @@ const LoginForm = () => {
     const [loading, setLoading] = useState(false);
     const [password, setPassword] = useState("");
     const classes = useStyles();
+    const login = useLogin();
 
     const validateForm = () => {
         return email.length > 0 && password.length > 0;
     }
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
+    const handleSubmit = (auth) => {
+        console.log(auth);
+        setLoading(true);
+        // auth_provider.login(auth);
+        // auth_provider.checkAuth();
+        login(auth, '/');
+        setLoading(false);
     }
 
     const renderInput = ({
@@ -97,10 +106,9 @@ const LoginForm = () => {
                                 <div className={classes.input}>
                                     <Field
                                         autoFocus
-                                        name="email"
+                                        name="name"
                                         component={renderInput}
-                                        label="Email"
-                                        type="email"
+                                        label="Username"
                                     // disabled={loading}
                                     />
                                 </div>

@@ -79,6 +79,9 @@ const metricFilter = (metric, toFilter) => {
 const VMMetricsData = (cloudService) => {
     // const { data } = useGetMany('statistics', [0]);
     // console.log(data);
+    // console.log(localStorage.getItem('token'));
+
+    
     const metricData = {
         openstack_metrics: {
             vcpu: 4,

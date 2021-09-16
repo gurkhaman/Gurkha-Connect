@@ -10,6 +10,7 @@ import {
     TextField,
 } from '@material-ui/core';
 import LockIcon from '@material-ui/icons/Lock';
+import auth_provider from '../auth_provider/auth_provider';
 const useStyles = makeStyles(theme => ({
     main: {
         display: 'flex',
@@ -58,8 +59,9 @@ const UserRegistration = () => {
         return email.length > 0 && password.length > 0;
     }
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
+    const handleSubmit = (auth) => {
+        setLoading(true);
+        auth_provider.createAccount(auth);
     }
 
     const renderInput = ({
@@ -97,10 +99,10 @@ const UserRegistration = () => {
                                 <div className={classes.input}>
                                     <Field
                                         autoFocus
-                                        name="email"
+                                        name="name"
                                         component={renderInput}
-                                        label="Email"
-                                        type="email"
+                                        label="Username"
+                                        type="text"
                                     // disabled={loading}
                                     />
                                 </div>

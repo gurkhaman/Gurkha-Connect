@@ -1,0 +1,11 @@
+{
+  "resource":{
+    "cloudstack_instance":{
+      "instance_1":{
+        "name":"cloudstack instance",
+        "service_offering":"Small Instance",
+        "network_id":"5a72a038-2851-4c29-8c36-13b7e29c48da"
+      }
+    }
+  }
+}
