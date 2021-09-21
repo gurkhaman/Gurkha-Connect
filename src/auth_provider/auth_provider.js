@@ -57,7 +57,7 @@ export default {
     },
     // called when the user navigates to a new location, to check for authentication
     checkAuth: () => {
-        console.log("checkAuth");
+        console.log("This is the token " + localStorage.getItem('token'));
         return localStorage.getItem('token')
             ? Promise.resolve('/')
             : Promise.reject();

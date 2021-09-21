@@ -11,33 +11,60 @@ import {
     FieldProps,
     useNotify,
     useRefresh,
-    Button,
 } from 'react-admin';
-import { Modal, Dialog, DialogTitle, DialogContent } from '@material-ui/core';
+import { Dialog, DialogTitle, DialogContent } from '@material-ui/core';
+import Modal from 'react-bootstrap/Modal'
+import Button from 'react-bootstrap/Button'
 
 const TemplateShow = () => {
-    const [showDialog, setShowDialog] = useState(false);
-    const notify = useNotify();
-    const refresh = useRefresh();
-
-    const handleClick = () => {
-        setShowDialog(true);
-    }
-
-    const handleCloseClick = () => {
-        setShowDialog(false);
-    }
+    const [show, setShow] = useState(true);
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
 
     return (
-        <>
-            <Dialog
-                fullWidth
-                open={showDialog}
-                onClose={handleCloseClick}
-            >
-                <DialogTitle>Template Details</DialogTitle>
-            </Dialog>
-        </>
+            <Modal show={show} onHide={handleClose}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Template Details</Modal.Title>
+                </Modal.Header>
+                <Modal.Footer>
+                    <Grid
+                        container
+                        direction="row"
+                        justifyContent="space-evenly"
+                        alignItems="center"
+                    >
+                        {/* <Button
+                            aria-label="Delete Template"
+                            label="Delete Template"
+                            onClick={TemplateDeleteSingle(id, resource)}>
+                            <ActionDelete />
+                        </Button>
+                        <Button
+                            label="Convert Template"
+                            onClick={TemplateConvert(id, resource)}>
+                            <AutorenewIcon />
+                        </Button>
+                        <Button
+                            label="Apply Terraform"
+                            onClick={applyTerraform}
+                        >
+                            <AutorenewIcon />
+                        </Button> */}
+                        <Button variant="secondary" onClick={handleClose}>
+                            Close
+                        </Button>
+                        <Button variant="secondary" onClick={handleClose}>
+                            Delete Template
+                        </Button>
+                        <Button variant="secondary" onClick={handleClose}>
+                            Convert Template
+                        </Button>
+                        <Button variant="secondary" onClick={handleClose}>
+                            Apply Terraform
+                        </Button>
+                    </Grid>
+                </Modal.Footer>
+            </Modal>
     )
 }
 
