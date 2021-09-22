@@ -19,6 +19,7 @@ import { TemplateList, TemplateListWithDrawer } from './tabs/templates/template_
 import { TemplateUpload } from './tabs/templates/template_upload';
 import LoginForm from './tabs/login_layout';
 import { ComponentLogs } from './tabs/logs/component_logs';
+import 'bootstrap/dist/css/bootstrap.min.css';
 //  const dataProvider = jsonServerProvider('https://jsonplaceholder.typicode.com');
 
 const fakedataProvider = fakeDataProvider({

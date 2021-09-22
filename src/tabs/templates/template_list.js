@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {
     List, useShowController, useListController,
-    ListProps, TextField, DateField, Datagrid, useGetOne, Loading, TopToolbar, ExportButton, BulkDeleteButton,
+    ListProps, TextField, DateField, Datagrid, useGetOne, Loading, TopToolbar, ExportButton, BulkDeleteButton, Button as raButton,
     useDelete, useGetMany, ReferenceField, SimpleShowLayout, RichTextField, useUpdate, useNotify, CreateButton, useRefresh
 } from 'react-admin';
 import { makeStyles } from '@material-ui/core/styles';
@@ -16,12 +16,13 @@ import { red } from '@material-ui/core/colors';
 import template_dataprovider from '../../data_provider/template_dataprovider';
 import { Route, RouteChildrenProps, useHistory } from 'react-router-dom';
 import { Drawer, useMediaQuery, Theme, Dialog } from '@material-ui/core';
-import { Fragment, useCallback, FC, useState } from 'react';
+import { Fragment, useCallback, FC, useState, useEffect } from 'react';
 import classnames from 'classnames';
 // import TemplateShow from './template_show';
 import { render } from '@testing-library/react';
 import Modal from 'react-bootstrap/Modal'
 import Button from 'react-bootstrap/Button'
+import ReactJson from 'react-json-view';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -44,24 +45,31 @@ const useStyles = makeStyles(theme => ({
 
 const ListActions = (props) => {
     const refresh = useRefresh();
+    const history = useHistory();
     const [deleteTemplates, { loading, error, success }] = useDelete('template', '*');
     if (error) { console.log(error) };
     if (success) refresh();
 
+    const handleUploadClick = useCallback(() => {
+        history.push('/template/create');
+    }, [history]);
+
     return (
         <TopToolbar>
-            {/* <Button label="Upload Template File">
-                <PublishIcon/>
-            </Button> */}
-            <CreateButton label="Upload Template" icon={<PublishIcon />}>
-            </CreateButton>
-            {/* <ExportButton /> */}
+            <Button
+                onClick={handleUploadClick}
+            >
+                <PublishIcon />
+                Upload Template
+            </Button>
 
-            <Button label="Delete All Templates"
+            <Button
                 onClick={deleteTemplates}
                 disabled={loading}
+                variant="danger"
             >
                 <ActionDelete />
+                Delete Templates
             </Button>
             {<DestroyTerraform />}
         </TopToolbar>
@@ -76,10 +84,12 @@ const DestroyTerraform = () => {
     // if(error) notify(data);
 
     return (
-        <Button label="Destroy Terraform"
+        <Button
             onClick={destroyRequest}
+            variant="dark"
         >
             <ActionDelete />
+            Destroy Terraform
         </Button>
     )
 
@@ -88,70 +98,29 @@ const DestroyTerraform = () => {
 export const TemplateList = props => {
     const classes = useStyles();
     const history = useHistory();
-    const [modalShow, setModalShow] = useState(false);
+    const refresh = useRefresh();
 
-    // const [show, setShow] = useState(true);
-    // const handleClose = () => setShow(false);
-    // const handleShow = () => setShow(true);
+    const [modalShow, setModalShow] = useState(false);
+    const [clickedRow, setClickedRow] = useState('');
 
     const handleClose = useCallback(() => {
         history.push('/template');
     }, [history]);
 
-
-
     return (
-        // <div className={classes.root}>
-        //     <Route path="/reviews/:id">
-        //         {({ match }) => {
-        //             const isMatch = !!(
-        //                 match &&
-        //                 match.params &&
-        //                 match.params.id !== 'create'
-        //             );
+        <>
+            <List {...props} actions={<ListActions />} resource="template">
+                <Datagrid rowClick={(id, record) => { setModalShow(true); setClickedRow(id); }}>
+                    <TextField source="id" />
+                    <TextField source="name" />
+                    <TextField source="upload_files" />
+                    <TextField source="description" />
+                    <DateField source="uploaded_at" />
+                </Datagrid>
+            </List>
+            <TemplateShow show={modalShow} onHide={() => { setModalShow(false); }} rowID={clickedRow} />
 
-        //             return (
-        //                 <Fragment>
-        //                     <List
-        //                         {...props}
-        //                         className={classnames(classes.list, {
-        //                             [classes.listWithDrawer]: isMatch,
-        //                         })}
-        //                         actions={<ListActions />} resource="template">
-        //                         <Datagrid rowClick="expand" expand={<TemplateShow />} >
-        //                             <TextField source="id" />
-        //                             <TextField source="name" />
-        //                             <TextField source="upload_files" />
-        //                             <TextField source="description" />
-        //                             <DateField source="uploaded_at" />
-        //                         </Datagrid>
-        //                     </List>
-        //                     <Drawer
-        //                         variant="persistent"
-        //                         open={isMatch}
-        //                         anchor="right"
-        //                         onClose={handleClose}
-        //                         classes={{
-        //                             paper: classes.drawerPaper,
-        //                         }}
-        //                     >
-
-        //                     </Drawer>
-        //                 </Fragment>
-        //             );
-        //         }}
-        //     </Route>
-        // </div>
-        // --------------------------------------------------------------------------------------------
-        <List {...props} actions={<ListActions />} resource="template">
-            <Datagrid rowClick={setModalShow(true)}>
-                <TextField source="id" />
-                <TextField source="name" />
-                <TextField source="upload_files" />
-                <TextField source="description" />
-                <DateField source="uploaded_at" />
-            </Datagrid>
-        </List>
+        </>
     )
 };
 
@@ -175,42 +144,65 @@ const TemplateConvert = (id, resource) => {
 }
 
 const TemplateShow = (props) => {
+    console.log(props);
+    const refresh = useRefresh();
+    const notify = useNotify();
+    const [templateDetails, setTemplateDetails] = useState({ status: 'Loading' });
+
+    useEffect(() => {
+        const request = new Request(`http://3.36.115.215:8000/template/${props.rowID}/`, {
+            method: 'GET',
+        });
+
+        fetch(request)
+            .then(response => response.json())
+            .then(result => { console.log(result); setTemplateDetails(result); })
+            .catch(error => console.log('error', error));
+    }, [props.rowID]);
+
+    const applyTerraform = async () => {
+        const request = new Request(`http://3.36.115.215:8000/template/terraform/${props.rowID}/`, {
+            method: 'GET',
+        });
+        try {
+            const response = await fetch(request);
+            const result_1 = await response.text();
+            console.log(result_1); refresh();
+        } catch (error) {
+            return console.log('error', error);
+        }
+    };
+
+    const [deleteSingleTemplate, {success, loading, error }] = useDelete(
+        `template`,
+        `${props.rowID}`,
+    );
+    if (error) { console.log("Error: Template deletion unsuccessful -> " + error); }
+    if (!loading) refresh();
+
+
     return (
-            <Modal {...props} show={show} onHide={handleClose}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Template Details</Modal.Title>
-                </Modal.Header>
-                <Modal.Footer>
-                    <Grid
-                        container
-                        direction="row"
-                        justifyContent="space-evenly"
-                        alignItems="center"
-                    >
-                        {/* <Button
-                            aria-label="Delete Template"
-                            label="Delete Template"
-                            onClick={TemplateDeleteSingle(id, resource)}>
-                            <ActionDelete />
-                        </Button>
-                        <Button
-                            label="Convert Template"
-                            onClick={TemplateConvert(id, resource)}>
-                            <AutorenewIcon />
-                        </Button>
-                        <Button
-                            label="Apply Terraform"
-                            onClick={applyTerraform}
-                        >
-                            <AutorenewIcon />
-                        </Button> */}
-                        <Button variant="secondary" onClick={props.onHide}>
-                            Close
-                        </Button>
-                    </Grid>
-                </Modal.Footer>
-            </Modal>
-    )
+        <Modal
+            {...props}
+            size="lg"
+            aria-labelledby="contained-modal-title-vcenter"
+            centered
+        >
+            <Modal.Header closeButton>
+                <Modal.Title id="contained-modal-title-vcenter">
+                    Template ID: {props.rowID}
+                </Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <ReactJson src={templateDetails} displayDataTypes={false} name={false} displayObjectSize={false} />
+            </Modal.Body>
+            <Modal.Footer>
+                <Button onClick={() => { deleteSingleTemplate(); props.onHide(); }} variant="danger">Delete Template</Button>
+                <Button onClick={TemplateConvert(props.rowID, 'template')}>Convert Template</Button>
+                <Button onClick={applyTerraform} variant="dark">Apply Terraform</Button>
+            </Modal.Footer>
+        </Modal >
+    );
 }
 
 
@@ -272,3 +264,44 @@ const TemplateShow = (props) => {
 
 
 
+// <div className={classes.root}>
+        //     <Route path="/reviews/:id">
+        //         {({ match }) => {
+        //             const isMatch = !!(
+        //                 match &&
+        //                 match.params &&
+        //                 match.params.id !== 'create'
+        //             );
+
+        //             return (
+        //                 <Fragment>
+        //                     <List
+        //                         {...props}
+        //                         className={classnames(classes.list, {
+        //                             [classes.listWithDrawer]: isMatch,
+        //                         })}
+        //                         actions={<ListActions />} resource="template">
+        //                         <Datagrid rowClick="expand" expand={<TemplateShow />} >
+        //                             <TextField source="id" />
+        //                             <TextField source="name" />
+        //                             <TextField source="upload_files" />
+        //                             <TextField source="description" />
+        //                             <DateField source="uploaded_at" />
+        //                         </Datagrid>
+        //                     </List>
+        //                     <Drawer
+        //                         variant="persistent"
+        //                         open={isMatch}
+        //                         anchor="right"
+        //                         onClose={handleClose}
+        //                         classes={{
+        //                             paper: classes.drawerPaper,
+        //                         }}
+        //                     >
+
+        //                     </Drawer>
+        //                 </Fragment>
+        //             );
+        //         }}
+        //     </Route>
+        // </div>
