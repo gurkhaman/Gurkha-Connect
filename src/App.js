@@ -43,7 +43,7 @@ const App = () => (
   <Admin
     dataProvider={template_dataprovider}
     dashboard={Dashboard}
-    // authProvider={authProvider}
+    authProvider={authProvider}
     customRoutes={customRoutes}
     loginPage={LoginForm}
   >

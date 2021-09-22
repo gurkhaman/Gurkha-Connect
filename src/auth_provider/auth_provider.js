@@ -13,9 +13,12 @@ export default {
                 }
                 return response.json();
             })
-            .then(({token})=> {
+            .then(({token, apikey, secretkey})=> {
+                console.log("token " + token, "apikey " + apikey, "secret_key " + secretkey );
                 localStorage.setItem('token', token);
                 localStorage.setItem('name', name);
+                localStorage.setItem('apikey', apikey);
+                localStorage.setItem('secretkey', secretkey)
             })
             .catch((error)=> {
                 console.log(error)

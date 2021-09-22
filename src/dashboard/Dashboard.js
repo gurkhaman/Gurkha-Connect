@@ -31,9 +31,6 @@ const useStyles = makeStyles({
 });
 
 
-
-
-
 const CloudComponentsData = (components) => {
     const { data } = useGetOne('check', 0);
     const componentsResponse = data;
@@ -72,6 +69,7 @@ var openstackComponents = {};
 var cloudstackComponents = {};
 
 const metricFilter = (metric, toFilter) => {
+
     return metric.reduce((obj, key) => ({ ...obj, [key]: toFilter[key] }), {});
 }
 
@@ -80,19 +78,7 @@ const VMMetricsData = (cloudService) => {
     // const { data } = useGetMany('statistics', [0]);
     // console.log(data);
     console.log(localStorage.getItem('token'));
-
-    let requestJson = {
-       requests: {
-           response: "json",
-           command: "listCapacity"
-       },
-       
-    }
-
-    
-
-    
-    const metricData = {
+    const dummyMetricData = {
         openstack_metrics: {
             vcpu: 4,
             vcpu_used: 1,
@@ -112,21 +98,52 @@ const VMMetricsData = (cloudService) => {
         }
     }
 
-    const vcpu = ['vcpu', 'vcpu_used'], memory = ['memory', 'memory_used'], storage = ['storage', 'storage_used'];
-    let vcpuObject, memoryObject, storageObject;
+    const [metricData, setMetricData] = React.useState(dummyMetricData);
 
 
-    if (cloudService === 'openstack') {
-        vcpuObject = metricFilter(vcpu, metricData.openstack_metrics);
-        memoryObject = metricFilter(memory, metricData.openstack_metrics);
-        storageObject = metricFilter(storage, metricData.openstack_metrics);
-    }else{
-        vcpuObject = metricFilter(vcpu, metricData.cloudstack_metrics);
-        memoryObject = metricFilter(memory, metricData.cloudstack_metrics);
-        storageObject = metricFilter(storage, metricData.cloudstack_metrics);
+    let requestJson = {
+        requests: {
+            apikey: localStorage.getItem('apikey'),
+            response: "json",
+            command: "listCapacity"
+        },
+        secretKey: localStorage.getItem('secretkey'),
     }
 
-    return (GraphMaker(vcpuObject, memoryObject, storageObject));
+    React.useEffect(() => {
+        const request = new Request('http://52.78.82.160:7014/statistics', {
+            method: 'POST',
+            body: JSON.stringify(requestJson),
+        });
+
+        fetch(request)
+            .then(response => response.json())
+            .then(result => { console.log(result); setMetricData(result); })
+            .catch(error => console.log('error', error));
+
+    }, []);
+
+    console.log(metricData);
+
+
+        const vcpu = ['vcpu', 'vcpu_used'], memory = ['memory', 'memory_used'], storage = ['storage', 'storage_used'];
+        let vcpuObject, memoryObject, storageObject;
+
+
+        if (cloudService === 'openstack') {
+            vcpuObject = metricFilter(vcpu, metricData.openstack_metrics);
+            memoryObject = metricFilter(memory, metricData.openstack_metrics);
+            storageObject = metricFilter(storage, metricData.openstack_metrics);
+        } else {
+            vcpuObject = metricFilter(vcpu, metricData.cloudstack_metrics);
+            memoryObject = metricFilter(memory, metricData.cloudstack_metrics);
+            storageObject = metricFilter(storage, metricData.cloudstack_metrics);
+        }
+
+        return (GraphMaker(vcpuObject, memoryObject, storageObject));
+
+    
+
 }
 
 
