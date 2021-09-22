@@ -147,8 +147,21 @@ const TemplateShow = (props) => {
     console.log(props);
     const refresh = useRefresh();
     const notify = useNotify();
-    const [templateDetails, setTemplateDetails] = useState({ status: 'Loading' });
 
+
+    const fakeDetails = {
+        0: [
+            {
+                info: {
+                    status: "loading",
+                }
+            }
+        ]
+    }
+
+    const [templateDetails, setTemplateDetails] = useState(fakeDetails);
+
+    
     useEffect(() => {
         const request = new Request(`http://3.36.115.215:8000/template/${props.rowID}/`, {
             method: 'GET',
@@ -173,12 +186,11 @@ const TemplateShow = (props) => {
         }
     };
 
-    const [deleteSingleTemplate, {success, loading, error }] = useDelete(
+    const [deleteSingleTemplate, { success, loading, error }] = useDelete(
         `template`,
         `${props.rowID}`,
     );
     if (error) { console.log("Error: Template deletion unsuccessful -> " + error); }
-    if (!loading) refresh();
 
 
     return (
@@ -194,7 +206,7 @@ const TemplateShow = (props) => {
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <ReactJson src={templateDetails} displayDataTypes={false} name={false} displayObjectSize={false} />
+                <ReactJson src={templateDetails[0].info} displayDataTypes={false} name={false} displayObjectSize={false} />
             </Modal.Body>
             <Modal.Footer>
                 <Button onClick={() => { deleteSingleTemplate(); props.onHide(); }} variant="danger">Delete Template</Button>
