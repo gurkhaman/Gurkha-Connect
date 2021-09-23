@@ -36,7 +36,7 @@ const CloudComponentsData = (components) => {
     const componentsResponse = data;
 
     for (var component in componentsResponse) {
-        if (component == 'agent' || component == 'management') {
+        if (component === 'agent' || component === 'management') {
             cloudstackComponents[component] = componentsResponse[component];
         } else if (component != 'id')
             openstackComponents[component] = componentsResponse[component];
@@ -113,6 +113,9 @@ const VMMetricsData = (cloudService) => {
     React.useEffect(() => {
         const request = new Request('http://52.78.82.160:7014/statistics', {
             method: 'POST',
+            headers: {
+                'token': localStorage.getItem('token')
+            },
             body: JSON.stringify(requestJson),
         });
 
@@ -125,10 +128,8 @@ const VMMetricsData = (cloudService) => {
 
     console.log(metricData);
 
-
         const vcpu = ['vcpu', 'vcpu_used'], memory = ['memory', 'memory_used'], storage = ['storage', 'storage_used'];
         let vcpuObject, memoryObject, storageObject;
-
 
         if (cloudService === 'openstack') {
             vcpuObject = metricFilter(vcpu, metricData.openstack_metrics);
@@ -158,10 +159,10 @@ const GraphMaker = (...args) => {
                         colorScale={["cyan", "navy"]}
                         width={150} height={150}
                         data={[
-                            { x: keyArray[0], y: metric[keyArray[0]], label: metric[keyArray[0]] },
-                            { x: keyArray[1], y: metric[keyArray[1]], label: metric[keyArray[1]] },
+                            { x: keyArray[0], y: metric[keyArray[0]], label: keyArray[0]+"\n"+metric[keyArray[0]] },
+                            { x: keyArray[1], y: metric[keyArray[1]], label: keyArray[1]+"\n"+metric[keyArray[1]] },
                         ]}
-                        style={{ labels: { fill: "black", fontSize: 4, fontWeight: "bold" } }}
+                        style={{ labels: { fill: "black", fontSize: 6, fontWeight: "bold" } }}
                     />
                 )
             })}

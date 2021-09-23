@@ -9,6 +9,8 @@ COPY package.json ./
 
 RUN yarn
 
+RUN yarn add axios
+
 COPY . ./
 
 RUN yarn build

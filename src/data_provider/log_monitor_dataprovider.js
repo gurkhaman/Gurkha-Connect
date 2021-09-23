@@ -29,7 +29,7 @@ export default {
                 _sort: field,
                 _order: order,
                 _start: (page - 1) * perPage,
-                _end: x_total_count - 1,
+                _end: (page - 1) * perPage +9,
             };
 
             // TODO figure out a way to use x_total_count to send _end value to the api 
