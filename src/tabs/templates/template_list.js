@@ -113,7 +113,7 @@ export const TemplateList = props => {
                 <Datagrid rowClick={(id, record) => { setModalShow(true); setClickedRow(id); }}>
                     <TextField source="id" />
                     <TextField source="name" />
-                    <TextField source="upload_files" />
+                    {/* <TextField source="upload_files" /> */}
                     <TextField source="description" />
                     <DateField source="uploaded_at" />
                 </Datagrid>

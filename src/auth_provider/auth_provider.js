@@ -1,4 +1,3 @@
-import axios from 'axios';
 
 export default {
     // called when the user attempts to log in
