@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
+import { useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import { Field, Form } from 'react-final-form';
 import {
@@ -54,14 +55,19 @@ const UserRegistration = () => {
     const [loading, setLoading] = useState(false);
     const [password, setPassword] = useState("");
     const classes = useStyles();
-
+    const history = useHistory();
     const validateForm = () => {
         return email.length > 0 && password.length > 0;
     }
 
+    const handleClose = useCallback(() => {
+        history.push('/login');
+    }, [history]);
+
     const handleSubmit = (auth) => {
         setLoading(true);
         auth_provider.createAccount(auth);
+        handleClose();
     }
 
     const renderInput = ({

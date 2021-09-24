@@ -38,9 +38,9 @@ export default {
                 }
                 return response.json();
             })
-            .then(({token})=> {
-                localStorage.setItem('token', token);
-                console.log(localStorage.getItem('token'));
+            .then(({name})=> {
+                localStorage.setItem('name', name);
+                console.log(localStorage.getItem('name'));
             })
             .catch(()=> {
                 throw new Error('Network error')
@@ -54,7 +54,7 @@ export default {
     // called when the API returns an error
     checkError: ({ status }) => {
         if (status === 401 || status === 403) {
-            localStorage.removeItem('username');
+            localStorage.removeItem('name');
             return Promise.reject();
         }
         return Promise.resolve();
@@ -62,7 +62,7 @@ export default {
     // called when the user navigates to a new location, to check for authentication
     checkAuth: () => {
         console.log("This is the token " + localStorage.getItem('token'));
-        return localStorage.getItem('token')
+        return localStorage.getItem('name')
             ? Promise.resolve('/')
             : Promise.reject();
     },
