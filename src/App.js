@@ -41,7 +41,7 @@ const fakedataProvider = fakeDataProvider({
 const App = () => (
   // layout={(props) => <CustomLayout {...props} menu={Menu} />}
   <Admin
-    dataProvider={log_monitor_dataprovider}
+    dataProvider={template_dataprovider}
     dashboard={Dashboard}
     authProvider={authProvider}
     customRoutes={customRoutes}

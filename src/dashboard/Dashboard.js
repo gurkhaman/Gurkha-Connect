@@ -182,7 +182,7 @@ export default () => {
                             alt="openstack"
                             className={classes.centerImage}
                         />
-
+                        <p>vcpu(core), memory(MB), storage(GB)</p>
                         <div className={classes.row} >
                             <div className={classes.column} >
                                 {VMMetricsData('openstack')}
@@ -202,7 +202,7 @@ export default () => {
                             alt="openstack"
                             className={classes.centerImage}
                         />
-
+                        <p>vcpu(core), memory(MB), storage(GB)</p>
                         <div className={classes.row} >
                             <div className={classes.column} >
                                 {VMMetricsData('cloudstack')}
